@@ -7,7 +7,7 @@ import cv2
 from sam2.build_sam import build_sam2
 from sam2.sam2_image_predictor import SAM2ImagePredictor
 
-from segment_utils import (
+from cheese_segmentation.segment_utils import (
     get_hsv_range,
     segment_from_hsv,
     calc_bbox_from_mask,
