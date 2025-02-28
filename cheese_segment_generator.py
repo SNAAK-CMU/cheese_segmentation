@@ -14,27 +14,28 @@ from cheese_segmentation.segment_utils import (
     convert_mask_to_orig_dims,
 )
 
+######## Parameters ##########
+
+CROP_XMIN_HSV = 350
+CROP_YMIN_HSV = 100
+CROP_XMAX_HSV = 400
+CROP_YMAX_HSV = 250
+
+CROP_XMIN = 320
+CROP_YMIN = 60
+CROP_XMAX = 430
+CROP_YMAX = 280
+
+###############################
+
 
 class CheeseSegmentGenerator:
 
     def __init__(self):
-        ######## Parameters ##########
-
-        CROP_XMIN_HSV = 350
-        CROP_YMIN_HSV = 100
-        CROP_XMAX_HSV = 400
-        CROP_YMAX_HSV = 250
-
-        CROP_XMIN = 320
-        CROP_YMIN = 60
-        CROP_XMAX = 430
-        CROP_YMAX = 280
-
-        ###############################
 
         # TODO: Change paths according deployment environment
-        sam2_checkpoint = "../checkpoints/sam2.1_hiera_small.pt"
-        model_cfg = "configs/sam2.1/sam2.1_hiera_s.yaml"
+        self.sam2_checkpoint = "../checkpoints/sam2.1_hiera_small.pt"
+        self.model_cfg = "configs/sam2.1/sam2.1_hiera_s.yaml"
         self.__create_sam_predictor()
 
         # Set up
@@ -42,33 +43,30 @@ class CheeseSegmentGenerator:
         self.lower_hsv = None
         self.upper_hsv = None
 
-        self.crop_xmin_hsv = self.CROP_XMIN_HSV
-        self.crop_ymin_hsv = self.CROP_YMIN_HSV
-        self.crop_xmax_hsv = self.CROP_XMAX_HSV
-        self.crop_ymax_hsv = self.CROP_YMAX_HSV
+        self.crop_xmin_hsv = CROP_XMIN_HSV
+        self.crop_ymin_hsv = CROP_YMIN_HSV
+        self.crop_xmax_hsv = CROP_XMAX_HSV
+        self.crop_ymax_hsv = CROP_YMAX_HSV
 
     def __create_sam_predictor(self):
         """
         Initializes and loads SAM2 model
         """
-        sam2_checkpoint = "../checkpoints/sam2.1_hiera_small.pt"
-        model_cfg = "configs/sam2.1/sam2.1_hiera_s.yaml"
-        sam2_model = build_sam2(model_cfg, sam2_checkpoint, device="cuda")
+
+        sam2_model = build_sam2(self.model_cfg, self.sam2_checkpoint, device="cuda")
         self.predictor = SAM2ImagePredictor(sam2_model)
 
-    def __segment_top_cheese_2e2(
-        self, image
-    ):
+    def __segment_top_cheese_2e2(self, image):
         """
         Input: RGB image
         Output: Binary mask of the top cheese slice
         Uses CV pipeline to get top slice of cheese from the rgb image
         """
         # Crop out the inner borders of the bin
-        crop_xmin = self.CROP_XMIN
-        crop_ymin = self.CROP_YMIN
-        crop_xmax = self.CROP_XMAX
-        crop_ymax = self.CROP_YMAX
+        crop_xmin = CROP_XMIN
+        crop_ymin = CROP_YMIN
+        crop_xmax = CROP_XMAX
+        crop_ymax = CROP_YMAX
         cropped_image = image[crop_ymin:crop_ymax, crop_xmin:crop_xmax]
 
         # Construct prompt using hsv mask
