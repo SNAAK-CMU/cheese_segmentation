@@ -34,7 +34,7 @@ class CheeseSegmentGenerator:
     def __init__(self):
 
         # TODO: Change paths according deployment environment
-        self.sam2_checkpoint = "../checkpoints/sam2.1_hiera_small.pt"
+        self.sam2_checkpoint = "/home/user/segment-anything-2/checkpoints/sam2.1_hiera_small.pt"
         self.model_cfg = "configs/sam2.1/sam2.1_hiera_s.yaml"
         self.__create_sam_predictor()
 
@@ -145,7 +145,7 @@ class CheeseSegmentGenerator:
 
         if not self.got_first_img:
             self.got_first_img = True
-            self.__calibrate_color_thresholding(self, image)
+            self.__calibrate_color_thresholding(image)
 
         top_cheese_mask = self.__segment_top_cheese_2e2(image)
         return top_cheese_mask
